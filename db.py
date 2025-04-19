@@ -2,10 +2,9 @@ import sqlite3
 from datetime import datetime, timedelta
 
 
-
 def get_db(name='habit_prod.db'):
     db = sqlite3.connect(name)
-    create_tables(db)
+    create_tables(db)  # Sample data will be added only if not already present
     return db
 
 
@@ -22,6 +21,31 @@ def create_tables(db):
         timestamp text,
         timestampLongestStreak text,
         FOREIGN KEY(habitName) REFERENCES habit(name))""")
+
+    # Insert sample data if not already present
+    sample_habits_data = [
+        ('Exercise', 'Daily physical activity', 'Daily'),
+        ('Read', 'Read a book', 'Daily'),
+        ('Study', 'Learn something new', 'Weekly')
+    ]
+    for habit in sample_habits_data:
+        c.execute("SELECT COUNT(*) FROM habit WHERE name = ?", (habit[0],))
+        if c.fetchone()[0] == 0:
+            c.execute("INSERT INTO habit (name, description, periodicity) VALUES (?,?,?)", habit)
+
+    timestamp = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    sample_events_data = [
+        ('Exercise', 0, 0, timestamp, timestamp),
+        ('Read', 0, 0, timestamp, timestamp),
+        ('Study', 0, 0, timestamp, timestamp)
+    ]
+    for event in sample_events_data:
+        c.execute("SELECT COUNT(*) FROM event WHERE habitName = ?", (event[0],))
+        if c.fetchone()[0] == 0:
+            c.execute(
+                "INSERT INTO event (habitName, currentStreak, longestStreak, timestamp, timestampLongestStreak) VALUES (?,?,?,?,?)",
+                event)
+
     db.commit()
 
 
@@ -92,7 +116,7 @@ def get_habits(db):
     c.execute("SELECT distinct(name) FROM habit order by name")
     return c.fetchall()
 
-def get_longest_streaks(db):
+def get_longest_streaks(db: sqlite3.Connection) -> list:
     c = db.cursor()
     c.execute("SELECT habitName, longestStreak, periodicity FROM event INNER JOIN habit ON event.habitName = habit.name ORDER BY longestStreak DESC, habitName ASC")
     return c.fetchall()

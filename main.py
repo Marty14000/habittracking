@@ -13,20 +13,26 @@ def cli():
     while not stop:
         choice = questionary.select("Choose an option", choices=["Add Habit", "Check Off Habit", "Analyse Habit", "Exit"]).ask()
         if choice == "Add Habit":
+                predefined_habits = ["Cleaning","Exercise","Meditating","Reading","Yoga"]
                 stored_habits = get_habits(db)
                 stored_habit_names = list(sum(stored_habits, ()))
                 habit_ok = False
                 while not habit_ok:
-                    name = questionary.select("Choose a habit or RETURN to exit to main menu", choices=["Exercise", "Yoga", "Meditating", "Reading", "Cleaning", "RETURN"]).ask()
+                    choices = [
+                        {"name": habit_name, "disabled": "already tracked" if habit_name in stored_habit_names else None}
+                        for habit_name in predefined_habits
+                    ]
+                    choices.append("RETURN")
+                    name = questionary.select("Choose a habit or RETURN to exit to main menu", choices=choices).ask()
                     #name = questionary.text("Whats the name of the habit?").ask().strip().upper()
-                    if name in stored_habit_names:
+                    '''if name in stored_habit_names:
                         habit_ok = False
                         print("Habit already exists, please choose another habit")
                     elif name == "":
                         habit_ok = False
-                        print("Habit name cannot be empty")
+                        print("Habit name cannot be empty")'''
 
-                    elif name == "RETURN":
+                    if name == "RETURN":
                         habit_ok = True
 
                     else:
@@ -120,8 +126,9 @@ def cli():
         else:
             stop = True
 
-
+    db.close()
 
 
 if __name__ == "__main__":
     cli()
+

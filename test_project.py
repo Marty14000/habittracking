@@ -29,8 +29,11 @@ from unittest.mock import patch
 #     assert str(habit) == "Test_habit - Test_description - Test_periodicity - 2025-01-01 00:00:00"
 #
 #
+
+db = get_db('habit_test.db')
+
 def test_store_habit():
-    db = get_db()
+    #db = get_db('habit_test.db')
     habit = Habit("New_habit", "New_description", "Daily", "2025-01-01 00:00:00")
     habit.store(db)
     stored_habits = [habit[0] for habit in db.execute("SELECT name FROM habit").fetchall()]
@@ -38,25 +41,25 @@ def test_store_habit():
     db.close()
 
 def test_checkoff_habit():
-    db = get_db()
+    #db = get_db('habit_test.db')
     habit = Habit("Checkoff_habit", "Checkoff ", "Weekly", "2025-01-01 00:00:00")
     habit.store(db)
     habit.check_off(db)
     events = get_habit_events(db, "Checkoff_habit")
     checked_off_events = [("Checkoff_habit", 1, 1)]
-    fetched_events = [(event[0], event[1], event[3]) for event in events]
+    fetched_events = [(event[0], event[1], event[2]) for event in events]
     assert checked_off_events == fetched_events
     db.close()
 
 def test_check_streak():
-    db = get_db()
+    #db = get_db('habit_test.db')
     habit = Habit("Streakcheck_habit", "Streak_description", "Weekly", "2025-01-01 00:00:00")
     habit.store(db)
     assert check_streak(db, "Streakcheck_habit")
     db.close()
 
 def test_get_longest_streak():
-    db = get_db()
+    #db = get_db('habit_test.db')
     habit = Habit("Streak_habit", "Streak_description", "Weekly", "2025-01-01 00:00:00")
     habit.store(db)
     checkoff_habit(db, "Streak_habit")

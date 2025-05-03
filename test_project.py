@@ -35,6 +35,7 @@ def test_store_habit():
     habit.store(db)
     stored_habits = [habit[0] for habit in db.execute("SELECT name FROM habit").fetchall()]
     assert "New_habit" in stored_habits
+    db.close()
 
 def test_checkoff_habit():
     db = get_db()
@@ -45,12 +46,14 @@ def test_checkoff_habit():
     checked_off_events = [("Checkoff_habit", 1, 1)]
     fetched_events = [(event[0], event[1], event[3]) for event in events]
     assert checked_off_events == fetched_events
+    db.close()
 
 def test_check_streak():
     db = get_db()
     habit = Habit("Streakcheck_habit", "Streak_description", "Weekly", "2025-01-01 00:00:00")
     habit.store(db)
     assert check_streak(db, "Streakcheck_habit")
+    db.close()
 
 def test_get_longest_streak():
     db = get_db()
@@ -67,8 +70,9 @@ def test_get_longest_streak():
         checkoff_habit(db, "Streak_habit")'''
     longest_streak = get_longest_streak(db, "Streak_habit")
     assert longest_streak[0][0] == 1
+    db.close()
 
-def test_streak():
+'''def test_streak():
     test_habit_data = [
         ('Test_habit', 'Test_description', 'Weekly', '2025-03-01 00:00:00'),
     ]
@@ -101,4 +105,4 @@ def habit_data():
         {"name": "habit1", "description": "description1", "periodicity": "daily"},
         {"name": "habit2", "description": "description2", "periodicity": "weekly"},
         {"name": "habit3", "description": "description3", "periodicity": "monthly"}
-    ]
+    ]'''

@@ -56,7 +56,6 @@ def create_tables(db):
         if c.fetchone()[0] == 0:
             c.execute("INSERT INTO habit (name, description, periodicity,creationTimestamp) VALUES (?,?,?,?)", habit)
 
-    timestamp = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     sample_events_data = [
         ('Exercise', 2, 3, '2025-04-01 00:00:00', '2025-03-23 00:00:00'),
         ('Reading', 20, 8, '2025-04-20 00:00:00', '2025-04-10 00:00:00')
@@ -87,6 +86,7 @@ def add_habit(db, name, description, periodicity, creation_date=None):
     :param name: Name of the habit to be added
     :param description: A short description of the habit
     :param periodicity: The periodicity of the habit (e.g., daily, weekly)
+    :param creation_date: The creation date of the habit
     :return: None
     """
     c = db.cursor()
@@ -94,7 +94,7 @@ def add_habit(db, name, description, periodicity, creation_date=None):
         try:
             creation_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             c.execute("INSERT INTO habit (name, description, periodicity, creationTimestamp) VALUES (?,?,?,?)",
-                      (name, description, periodicity,creation_date))
+                      (name, description, periodicity, creation_date))
             timestamp = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
             c.execute("INSERT INTO event (habitName, currentStreak, timestamp, longestStreak, timestampLongestStreak) "
                       "VALUES (?,?,?,?,?)", (name, 0, timestamp, 0, timestamp))
@@ -207,10 +207,12 @@ def check_streak(db, name):
     c.execute("SELECT distinct(name) FROM habit order by name")
     return c.fetchall()"""
 
+
 def get_habits(db):
     c = db.cursor()
     c.execute("SELECT name, description, periodicity, creationTimestamp FROM habit order by name")
     return c.fetchall()
+
 
 def get_longest_streaks(db: sqlite3.Connection) -> list:
     c = db.cursor()

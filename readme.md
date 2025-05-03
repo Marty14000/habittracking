@@ -1,10 +1,11 @@
 # Habittracking App / Project
 
 ## What is it?
-App for creating/tracking/analysing habits
+Simple application for creating/tracking/analysing habits
 
 ## Installation
 ```
+git clone https://github.com/Marty14000/habittracking.git
 pip install -r requirements.txt
 ````
 ## Usage

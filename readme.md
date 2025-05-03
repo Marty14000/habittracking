@@ -1,8 +1,8 @@
 # Habittracking App / Project
 
 ## What is it?
-Simple application for creating/tracking/analysing habits
-Application is cli based and self explanatory
+Simple application for creating/tracking/analysing habits  
+Application is cli based and self explanatory  
 Simply follow the menu options
 
 ## Installation

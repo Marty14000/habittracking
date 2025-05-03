@@ -1,3 +1,4 @@
+import os
 import pytest
 
 from habit import Habit
@@ -5,7 +6,14 @@ from db import get_db, add_habit, checkoff_habit, get_habit_events, get_longest_
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
-
+@pytest.fixture(scope='function', autouse=True)
+def delete_sqlite_file():
+    db_path = 'habit_test.db'
+    if os.path.exists(db_path):
+        os.remove(db_path)
+    yield
+    if os.path.exists(db_path):
+        os.remove(db_path)
 
 # def test_habit():
 #     habit = Habit("Test_habit", "Test_description", "Test_periodicity", "2025-01-01 00:00:00")
@@ -30,10 +38,8 @@ from unittest.mock import patch
 #
 #
 
-db = get_db('habit_test.db')
-
 def test_store_habit():
-    #db = get_db('habit_test.db')
+    db = get_db('habit_test.db')
     habit = Habit("New_habit", "New_description", "Daily", "2025-01-01 00:00:00")
     habit.store(db)
     stored_habits = [habit[0] for habit in db.execute("SELECT name FROM habit").fetchall()]
@@ -41,7 +47,7 @@ def test_store_habit():
     db.close()
 
 def test_checkoff_habit():
-    #db = get_db('habit_test.db')
+    db = get_db('habit_test.db')
     habit = Habit("Checkoff_habit", "Checkoff ", "Weekly", "2025-01-01 00:00:00")
     habit.store(db)
     habit.check_off(db)
@@ -52,14 +58,14 @@ def test_checkoff_habit():
     db.close()
 
 def test_check_streak():
-    #db = get_db('habit_test.db')
+    db = get_db('habit_test.db')
     habit = Habit("Streakcheck_habit", "Streak_description", "Weekly", "2025-01-01 00:00:00")
     habit.store(db)
     assert check_streak(db, "Streakcheck_habit")
     db.close()
 
 def test_get_longest_streak():
-    #db = get_db('habit_test.db')
+    db = get_db('habit_test.db')
     habit = Habit("Streak_habit", "Streak_description", "Weekly", "2025-01-01 00:00:00")
     habit.store(db)
     checkoff_habit(db, "Streak_habit")

@@ -36,7 +36,8 @@ def create_tables(db):
     c.execute("""CREATE TABLE IF NOT EXISTS habit (
         name text UNIQUE PRIMARY KEY,
         description text,
-        periodicity text)""")
+        periodicity text,
+        creationTimestamp text)""")
     c.execute("""CREATE TABLE IF NOT EXISTS event (
         habitName text,
         currentStreak integer DEFAULT 0,

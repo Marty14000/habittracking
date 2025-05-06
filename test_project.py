@@ -1,6 +1,6 @@
 import os
+import time
 import pytest
-
 from habit import Habit
 from db import get_db, checkoff_habit, get_habit_events, get_longest_streak, check_streak
 
@@ -15,8 +15,14 @@ def delete_sqlite_file():
     if os.path.exists(db_path):
         os.remove(db_path)
     yield
-    if os.path.exists(db_path):
-        os.remove(db_path)
+    try:
+        if os.path.exists(db_path):
+            os.remove(db_path)
+    except PermissionError:
+        # Delay due to Windows file lock
+        time.sleep(0.1)
+        if os.path.exists(db_path):
+            os.remove(db_path)
 
 
 def test_store_habit():
